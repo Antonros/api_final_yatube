@@ -60,6 +60,16 @@ class Follow(models.Model):
         ordering = ['user__username']
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
+        constraints = [
+            models.UniqueConstraint(
+                name='unique_relationships',
+                fields=['user', 'following'],
+            ),
+            models.CheckConstraint(
+                name='prevent_self_follow',
+                check=~models.Q(user=models.F('following')),
+            ),
+        ]
 
     def __str__(self):
         return f'{self.user.username} follows {self.following.username}'
